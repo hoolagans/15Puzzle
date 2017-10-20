@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.LinkedList;
 public class Board {
 	String Bord;
 	int DLeft;
@@ -84,24 +85,38 @@ public class Board {
 	}
 	public void boardsFound(){
 		
-		System.out.println( has.size());
+		System.out.println(has.size());
 		
 	}
-	//a hefty function that takes input puzzle as string, and current depth and recursively creates the next possible boards
-	//culling out any previously seen board if depth is further down the tree than when it was seen before. 
+	//a hefty function that takes input puzzle as string, and current depth and non-recursively creates the next possible boards
+	//culling out any previously seen board if depth is further than when it was seen before. 
 	//it will output true if a solved board is found
-	public boolean solveable(String a,int depth){
-		if(depth>=0){
+	public boolean solveable(String a,int depth, LinkedList<String> d){
+		boolean solved = false;
+		LinkedList<Integer> dp = new LinkedList<Integer>();
+		LinkedList<String> movesDone = new LinkedList<String>();
+		String a2 = a;
+		d.addLast(a2);
+		dp.addLast(depth);
+		movesDone.addLast("");
+		String move = " ";
+		//a = d.getFirst();
+		int deep = depth;
+		while(deep>=0 && solved == false){
+		a2 = d.removeFirst();
+		move = movesDone.removeFirst();
+		deep =dp.removeFirst();
+		//System.out.println("a2: " + a2);
 		String last = lastDir;
-		Board ab = new Board(a,depth);
-		if(has.containsKey(a)&&(int)has.get(a)>depth){
+		Board ab = new Board(a2,depth);
+		if(has.containsKey(a2)&&(int)has.get(a2)>depth){
 			//System.out.println((int)has.get(a));
 			return false;}
 		//if(has.containsKey(a))
 		//System.out.println((int)has.get(a));
-		has.put(a,depth);
+		has.put(a2,deep);
 		
-		int pos = a.indexOf("0");
+		int pos = a2.indexOf("0");
 		up = false;
 		down = false;
 		left = false;
@@ -136,12 +151,18 @@ public class Board {
 		//String lastDir="";
 		
 		
-		boolean solved=false;
-		if (a.equals("123456789abcdef0")){
+		//boolean solved=false;
+		if (a2.equals("123456789abcdef0")){
 			solved = true;
+			int dep = depth-deep;
+			System.out.println("\n" +"depth found at: " + dep);
+			System.out.println("moves of the empty node to solve the puzzle, l=left, r=right, d=down, u=up");
+			System.out.println(move);
 			return solved;}
 		if(up==true&& solved ==false){
-			lastDir = "u";solved = solveable(ab.moveUp(),depth-1);
+			d.addLast(ab.moveUp());//lastDir = "u";solved = solveable(ab.moveUp(),depth-1);
+			dp.addLast(deep-1);
+			movesDone.addLast(move+"u");
 		lastDir = "u";
 		}
 		legality(pos);
@@ -160,7 +181,9 @@ public class Board {
 		}
 		
 		if(down==true&& solved == false){
-			lastDir="d";solved =solveable(ab.moveDown(),depth-1);
+			d.addLast(ab.moveDown());//lastDir="d";solved =solveable(ab.moveDown(),depth-1);
+			dp.addLast(deep-1);
+			movesDone.addLast(move+"d");
 		lastDir="d";
 		}
 		legality(pos);
@@ -179,7 +202,10 @@ public class Board {
 		}
 		
 		if(left==true&& solved == false){
-			lastDir = "l";solved =solveable(ab.moveLeft(),depth-1);	
+			d.addLast(ab.moveLeft());
+			dp.addLast(deep-1);
+			movesDone.addLast(move+"l");
+			//lastDir = "l";solved =solveable(ab.moveLeft(),depth-1);	
 		lastDir = "l";
 		}
 		legality(pos);
@@ -198,20 +224,25 @@ public class Board {
 		}
 		
 		if(right==true&& solved == false){
-			lastDir = "r";solved =solveable(ab.moveRight(),depth-1);
+			d.addLast(ab.moveRight());
+			dp.addLast(deep-1);
+			movesDone.addLast(move+"r");
+			//lastDir = "r";solved =solveable(ab.moveRight(),depth-1);
 		lastDir = "r";
 		}
 		
 		if(solved ==true){
 			solvePath+=lastDir;
+			System.out.println("depth found at: " + deep);
+			return solved;
 		}
-		return solved;
+		
 		
 		}
-		else{
-			return false;
+	
+		return solved;
 		}
-	}
+	
 	
 	//checks for what moves are legal based on board position only, the checks for previous boards are within the recursive solveable function.
 	public void legality(int pos){

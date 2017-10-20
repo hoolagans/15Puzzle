@@ -1,13 +1,18 @@
+import java.util.ArrayDeque;
+
 /**
  * @author Nathan Haut
  * project: 15 puzzle solver
  * date: 10/10/17
  * 
  * Non recursive, uses deque
+ * array deque
 */
+import java.util.LinkedList;
 public class Solver {
-
+	//public LinkedList<String> deck;
 	public static void main(String[] args) {
+		LinkedList<String> deck = new LinkedList<String>();
 		// TODO Auto-generated method stub
 		Board a = new Board("123456789abcdef0",0);
 		a.scramble(15);
@@ -20,16 +25,18 @@ public class Solver {
 		System.out.println(puzz.substring(8, 12));
 		System.out.println(puzz.substring(12, 16));
 		long time = System.currentTimeMillis();
-		boolean solved = a.solveable(a.toString(),15);
+		System.out.println("_______");
+		boolean solved = a.solveable(a.toString(),15, deck);
 		//System.out.println(solved);
 		//System.out.println(a.getSolvePath());
-		System.out.println("_______");
+		
 		if(solved==true){
-			System.out.println("the puzzle is solveable");
-			System.out.println("moves of the empty node to solve the puzzle, l=left, r=right, d=down, u=up");
-		for(int i = a.getSolvePath().length()-1; i>3;i--){
-			System.out.print(a.getSolvePath().charAt(i));
-		}}
+			System.out.println("\n"+"the puzzle is solveable");
+			
+		//for(int i = a.getSolvePath().length()-1; i>3;i--){
+		//	System.out.print(a.getSolvePath().charAt(i));
+		//}
+		}
 		else{
 			System.out.println("The puzzle is unsolveable");
 		}
